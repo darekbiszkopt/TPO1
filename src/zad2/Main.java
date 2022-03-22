@@ -45,12 +45,11 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) throws IOException, InvocationTargetException {
-    	
-    	String country = "England";
-    	 Service s = new Service(country);
-    	    String weatherJson = s.getWeather("Warsaw");
-//    	    String rate1 = s.getRateFor();
-    	    Double rate2 = s.getNBPRate();
+//    	
+//    	 Service s = new Service("Poland");
+//    	    String weatherJson = s.getWeather("Warsaw");
+//    	    Double rate1 = s.getRateFor("USD");
+//    	    Double rate2 = s.getNBPRate();
         Application.launch(args);
  
     }

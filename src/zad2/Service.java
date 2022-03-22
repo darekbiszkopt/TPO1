@@ -93,36 +93,38 @@ String kraj = null;
 			e.printStackTrace();
 		}
 		
-		return sformatujWaluty(responseMessage, rate);
+		return formatCurrency(responseMessage, rate);
 	      
     }
 	
-	   public Double sformatujWaluty(String tekstNiesformatowany, String rate) {
+	   public Double formatCurrency(String toFormat, String rate) {
 	    	
-	    	String tekstSformatowany = "";
+	    	String formatText = "";
 	    	Double exchangeRate = 0.;
 	    	Double countryRate = 0.;
 	    	try {
 	    	
-	    			JSONObject jsonObj = new JSONObject(tekstNiesformatowany);
+	    			JSONObject jsonObj = new JSONObject(toFormat);
 	    			
 	    			if (!jsonObj.isNull("rates")) {
 	    				if(rate.equals( "GBP")) {
-	    					tekstSformatowany += "Funt: " + jsonObj.getJSONObject("rates").get("GBP") + "GBP";
+	    					formatText += "Funt: " + jsonObj.getJSONObject("rates").get("GBP") + "GBP";
 	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get("GBP");
 	    				} else if (rate.equals( "USD")) {
-	    					tekstSformatowany += "Dolar: " + jsonObj.getJSONObject("rates").get("USD")+ "USD";
+	    					formatText += "Dolar: " + jsonObj.getJSONObject("rates").get("USD")+ "USD";
 	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get("USD");
 	    				} else if (rate.equals( "PLN")) {
-	    					tekstSformatowany += "Polski Złoty: " + jsonObj.getJSONObject("rates").get("PLN")+ "PLN";
+	    					formatText += "Polski Złoty: " + jsonObj.getJSONObject("rates").get("PLN")+ "PLN";
 	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get("PLN");
 	    				} else if (rate.equals( "EUR")) {
 	    					
 	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get("EUR");
 	    				} else if (rate.equals( "CHF")) {
-	    					tekstSformatowany += "Frank: " + jsonObj.getJSONObject("rates").get("CHF")+ "CHF" ;
+	    					formatText += "Frank: " + jsonObj.getJSONObject("rates").get("CHF")+ "CHF" ;
 	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get("CHF");
-	    				} 
+	    				} else {
+	    					exchangeRate = (Double) jsonObj.getJSONObject("rates").get(rate);
+	    				}
 	    	} 
 	    			
 	    			
@@ -191,43 +193,44 @@ String kraj = null;
 			e.printStackTrace();
 		}
 		
-		return sformatujPogode(responseMessage);
-		
-
+		return formatWeather(responseMessage);
         
     }
 	
 	
-	   public String sformatujPogode(String tekstNiesformatowany) {
+	   public String formatWeather(String toFromat) {
 	    	
-	    	String tekstSformatowany = "";
+	    	String format = "";
 	    	
 	    	try {
 	    	
-	    			JSONObject jsonObj = new JSONObject(tekstNiesformatowany);
+	    			JSONObject jsonObj = new JSONObject(toFromat);
 	    			
 	    			if (!jsonObj.isNull("main")) {
 	    				
-	    				tekstSformatowany += "Temperature: " + jsonObj.getJSONObject("main").get("temp") + "F" + "\n";
-	    				tekstSformatowany += "Temperature min: " + jsonObj.getJSONObject("main").get("temp_min")+ "F" + "\n";
-	    				tekstSformatowany += "Temperature max: " + jsonObj.getJSONObject("main").get("temp_max")+ "F" + "\n";
-	    				tekstSformatowany += "Humidity: " + jsonObj.getJSONObject("main").get("humidity") + "\n";
-	    				tekstSformatowany += "Pressure: " + jsonObj.getJSONObject("main").get("pressure");
+	    				format += "Temperature: " + jsonObj.getJSONObject("main").get("temp") + "F" + "\n"
+	    				+ "Temperature min: " + jsonObj.getJSONObject("main").get("temp_min")+ "F" + "\n"
+	    				+ "Temperature max: " + jsonObj.getJSONObject("main").get("temp_max")+ "F" + "\n"
+	    				+ "Humidity: " + jsonObj.getJSONObject("main").get("humidity") + "\n"
+	    				+ "Pressure: " + jsonObj.getJSONObject("main").get("pressure");
 	    			}
 
 	    	} catch (Exception ex) {}
 	    	
-	    	return tekstSformatowany;
+	    	return format;
 	    }
 	   
 	   
 	   
 	   Double getNBPRate() throws InvocationTargetException {
 			
-			String[] BASE_URL = {"http://www.nbp.pl/kursy/kursya.html", "http://www.nbp.pl/kursy/kursyb.html"};
+			String[] BASE_URL = {
+					"http://www.nbp.pl/kursy/kursya.html",
+					"http://www.nbp.pl/kursy/kursyb.html"};
+			
 			Double exchange = null;
 			
-			for (int i = 0; i < 2 && exchange == null; i++) {
+			for (int i = 0; i <= 1 && exchange == null; i++) {
 				
 				HttpGet get = new HttpGet(BASE_URL[i]);
 			
@@ -256,8 +259,8 @@ String kraj = null;
 					if (indeksKoduWaluty != -1 ) {
 	            	
 						
-						int indeksKursu = exchangeRates.indexOf(">", indeksKoduWaluty + 10) + 1;
-						exchange = Double.valueOf(exchangeRates.substring(indeksKursu, indeksKursu + 6).replace(',', '.'));
+						int index = exchangeRates.indexOf(">", indeksKoduWaluty + 10) + 1;
+						exchange = Double.valueOf(exchangeRates.substring(index, index + 6).replace(',', '.'));
 						this.counterRate = exchange;
 						System.out.print(exchange);
 					} 
